@@ -1,0 +1,29 @@
+{
+  "name": "sanitize",
+  "version": "1.0.0",
+  "description": "check definitions and sanitize js data structures according to a data definiton config",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test",
+    "src": "src"
+  },
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxplumley/sanitize-js.git"
+  },
+  "author": "Max Plumley",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maxplumley/sanitize-js/issues"
+  },
+  "homepage": "https://github.com/maxplumley/sanitize-js#readme",
+  "dependencies": {
+    "mocha": "^5.2.0",
+    "should": "^13.2.3",
+    "underscore": "^1.9.1"
+  }
+}
