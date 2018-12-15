@@ -111,6 +111,7 @@ const fieldChecks = {
   string: checkString,   
   array: checkArray,
   object: checkObject,  
+  map: checkMap,
 };
 
 function checkObject(obj, def) {
@@ -154,7 +155,7 @@ function checkObject(obj, def) {
 }
 
 function checkMap(obj, def) {
-  if (!_.isObject(obj)) {
+  if (!_.isObject(obj) || _.isArray(obj)) {
     throw new SanitizeError(`${def.name ? def.name + ': ' : '' }expected type ${def.type}.`);
   }
 

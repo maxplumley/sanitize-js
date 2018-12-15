@@ -1,6 +1,7 @@
 const sanity = require('../src');
 const fieldTypes = sanity.fieldTypes;
 const putArrayType = sanity.putArrayType;
+const putMapType = sanity.putMapType;
 const shoulds = require("../lib/functionTest").shoulds;
 
 const manifest = {
@@ -238,9 +239,128 @@ const manifest = {
       ],
       return: [{param:1}, {param:2}],
     },
+
+    // map definitions
+    {
+      description: `number input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.throw,
+      args: [
+        1,
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `empty array input, ${putMapType(fieldTypes.number)}  definiton`,
+      should: shoulds.throw,
+      args: [
+        [],
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `empty map input, ${putMapType(fieldTypes.number)}  definiton`,
+      should: shoulds.pass,
+      args: [
+        {},
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: {},
+    },
+    {
+      description: `${putArrayType(fieldTypes.number)} input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.throw,
+      args: [
+        [1],
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `${putMapType(fieldTypes.number)} input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.pass,
+      args: [
+        {key1: 1},
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: {key1: 1},
+    },
+    {
+      description: `${putMapType(putMapType(fieldTypes.number))} input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.pass,
+      args: [
+        {outerKey: { innerKey1: 1, interKey2: 2, innerKey3: 3}},
+        {type: putMapType(putMapType(fieldTypes.number)), }
+      ],
+      return: {outerKey: { innerKey1: 1, interKey2: 2, innerKey3: 3}},
+    },
+    {
+      description: `string 'abc' input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.throw,
+      args: [
+        'abc',
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `boolean input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.throw,
+      args: [
+        true,
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `object with mixed value types as input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.throw,
+      args: [
+        {param: 1,
+        param2: "hello"},
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `${putMapType(fieldTypes.boolean)} input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.throw,
+      args: [
+        {key1: true, key2: false},
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `${putMapType(fieldTypes.boolean)} input, ${putMapType(fieldTypes.string)} definiton`,
+      should: shoulds.pass,
+      args: [
+        {key1: true, key2: false},
+        {type: putMapType(fieldTypes.string), }
+      ],
+      return: {key1: 'true', key2: 'false'},
+    },
+    {
+      description: `${putMapType(fieldTypes.object)} input, ${putMapType(fieldTypes.number)} definiton`,
+      should: shoulds.throw,
+      args: [
+        {key1: {param:1}, key2: {param:2}},
+        {type: putMapType(fieldTypes.number), }
+      ],
+      return: `expected type ${putMapType(fieldTypes.number)}`,
+    },
+    {
+      description: `${putMapType(fieldTypes.object)} input, ${putMapType(fieldTypes.object)} definiton`,
+      should: shoulds.pass,
+      args: [
+        {key1: {param:1}, key2: {param:2}},
+        {type: putMapType(fieldTypes.object), fields: [{name: 'param', type: fieldTypes.number}]}
+      ],
+      return: {key1: {param:1}, key2: {param:2}},
+    },
     
     // object definitons
-    
     {
       description: "number input, object definiton",
       should: shoulds.throw,
@@ -332,6 +452,38 @@ const manifest = {
         },
         {
           type: fieldTypes.object, 
+          fields: [
+            {name: 'integer', type: fieldTypes.number},
+            {name: 'boolean', type: fieldTypes.boolean},
+            {name: 'string', type: fieldTypes.string},
+            {name: 'array', type: putArrayType(fieldTypes.number)},
+            {name: 'object', type: fieldTypes.object, 
+              fields: [
+                {name: 'param1', type: fieldTypes.number},
+                {name: 'param2', type: fieldTypes.number},
+              ]},
+            {name: 'absent', type: fieldTypes.string, required: true,},
+          ]
+        }
+      ],
+      return: 'required field not found'
+    },
+
+    {
+      description: `${putMapType(fieldTypes.object)} input, ${ putMapType(fieldTypes.object)} definiton, required field not in subtype input`,
+      should: shoulds.throw,
+      args: [
+        {
+          key1: {
+            integer: 1,
+            boolean: true,
+            string: 'hello',
+            array: [1,2,3],
+            object: {param1: 1, param2: 2},
+          }
+        },
+        {
+          type: putMapType(fieldTypes.object), 
           fields: [
             {name: 'integer', type: fieldTypes.number},
             {name: 'boolean', type: fieldTypes.boolean},
